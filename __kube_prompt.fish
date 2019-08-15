@@ -36,7 +36,7 @@ function __kube_ps_update_cache
 
   for conf in (string split ':' "$kubeconfig")
     if /bin/test -r "$conf"
-      if /bin/test -z "$__kube_ps_timestamp"; or /bin/test (/usr/bin/stat -f '%m' "$conf") -gt "$__kube_ps_timestamp"
+      if /bin/test -z "$__kube_ps_timestamp"; or /bin/test (/usr/bin/stat -c '%Y' "$conf") -gt "$__kube_ps_timestamp"
         __kube_ps_cache_context
         __kube_ps_cache_namespace
         set -g __kube_ps_kubeconfig "$kubeconfig"
@@ -49,6 +49,10 @@ end
 
 function __kube_prompt
   if /bin/test -z "$__kube_ps_enabled"; or /bin/test $__kube_ps_enabled -ne 1
+    return
+  end
+
+  if /bin/test (/usr/bin/hostname) != "devops"
     return
   end
 
